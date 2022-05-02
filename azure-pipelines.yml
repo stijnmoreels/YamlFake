@@ -30,8 +30,9 @@ stages:
               packageType: 'sdk'
               version: '6.0.100'
           - task: DotNetCoreCLI@2
-            command: custom
-            custom: fake build target Compile
+            inputs:
+              command: custom
+              custom: fake build target Compile
           - task: PublishPipelineArtifact@0
             displayName: 'Publish build artifacts'
             inputs:
@@ -54,8 +55,9 @@ stages:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
           - task: DotNetCoreCLI@2
-            command: custom
-            custom: fake build target Tests
+            inputs:
+              command: custom
+              custom: fake build target Tests
 
   - stage: Release
     displayName: Release to CD system
