@@ -15,14 +15,14 @@ pr:
       - build.fsx
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 stages:
   - stage: Build
     jobs:
       - job: Compile
         pool:
-          vimImage: ubuntu-latest
+          vimImage: 'ubuntu-latest'
         steps:
           - task: UseDotNet@2
             displayName: 'Import .NET Core SDK (6.0.100)'
@@ -47,7 +47,7 @@ stages:
       - job: RunTests
         displayName: Run unit tests
         pool:
-          vmImage: ubuntu-latest
+          vmImage: 'ubuntu-latest'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download build artifacts'
@@ -67,7 +67,7 @@ stages:
       - job: PushToCD
         displayName: Push to CD system
         pool:
-          vmImage: ubuntu-latest
+          vmImage: 'ubuntu-latest'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download build artifacts'
