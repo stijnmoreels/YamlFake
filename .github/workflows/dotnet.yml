@@ -17,6 +17,8 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.100
+    - name: Install Paket
+      run: dotnet tool install paket
     - name: Install FAKE
       run: dotnet tool install fake-cli
     - name: Build
