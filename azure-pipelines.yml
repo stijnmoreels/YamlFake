@@ -25,15 +25,15 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - task: UseDotNet@2
-            displayName: 'Import .NET Core SDK (6.0.100)'
+            displayName: 'Import .NET Core SDK (6.0.202)'
             inputs:
               packageType: 'sdk'
-              version: '6.0.100'
+              version: '6.0.202'
           - task: DotNetCoreCLI@2
             displayName: Install Paket
             inputs:
               command: custom
-              custom: tool install paket
+              custom: tool install Paket
           - task: DotNetCoreCLI@2
             displayName: Install FAKE
             inputs:
