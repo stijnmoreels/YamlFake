@@ -1,19 +1,73 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/*
+
+pr:
+  paths:
+    include:
+      - src/*
+      - azure-pipelines.yml
+      - build.fsx
 
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+  - stage: Build
+    jobs:
+      - job: Compile
+        pool:
+          vimImage: ubuntu-latest
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Import .NET Core SDK (6.0.100)'
+            inputs:
+              packageType: 'sdk'
+              version: '6.0.100'
+          - task: DotNetCoreCLI@2
+            command: custom
+            custom: fake build target Compile
+          - task: PublishPipelineArtifact@0
+            displayName: 'Publish build artifacts'
+            inputs:
+              targetPath: '$(Pipeline.Workspace)/build'
+              artifactName: Build
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  - stage: UnitTests
+    displayName: Unit tests
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: RunTests
+        displayName: Run unit tests
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download build artifacts'
+            inputs:
+              artifact: 'Build'
+              path: '$(Build.SourcesDirectory)'
+          - task: DotNetCoreCLI@2
+            command: custom
+            custom: fake build target Tests
+
+  - stage: Release
+    displayName: Release to CD system
+    dependsOn: UnitTests
+    condition: succeeded()
+    jobs:
+      - job: PushToCD
+        displayName: Push to CD system
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download build artifacts'
+            inputs:
+              artifact: 'Build'
+              path: '$(Build.SourcesDirectory)'
