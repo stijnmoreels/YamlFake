@@ -31,10 +31,8 @@ stages:
               version: '6.0.202'
           - script: dotnet tool restore
             displayName: Restore .NET tools
-          - task: DotNetCoreCLI@2
-            inputs:
-              command: custom
-              custom: fake build target Compile
+          - script: dotnet fake build target Compile
+            displayName: Run Compile FAKE target
           - task: PublishPipelineArtifact@0
             displayName: 'Publish build artifacts'
             inputs:
@@ -58,10 +56,8 @@ stages:
               path: '$(Build.SourcesDirectory)'
           - script: dotnet tool restore
             displayName: Restore .NET tools
-          - task: DotNetCoreCLI@2
-            inputs:
-              command: custom
-              custom: fake run build.fsx --target Tests --single-target
+          - script: dotnet fake run build.fsx --target Tests --single-target
+            displayName: Run 'Tests' FAKE target
 
   - stage: Release
     displayName: Release to CD system
