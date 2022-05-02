@@ -19,6 +19,11 @@ Target.create "Clean" <| fun _ ->
     ++ "src/**/obj"
     |> Shell.cleanDirs 
 
+Target.create "Cleans" <| fun _ ->
+    !! "src/**/bin"
+    ++ "src/**/obj"
+    |> Shell.cleanDirs 
+
 Target.create "Compile" <| fun _ ->
     !! "src/**/*.*proj"
     |> Seq.iter (DotNet.build id)
@@ -30,6 +35,7 @@ Target.create "Tests" <| fun _ ->
 Target.create "All" ignore
 
 "Clean"
+  ==> "Cleans"
   ==> "Compile"
   ==> "Tests"
   ==> "All"

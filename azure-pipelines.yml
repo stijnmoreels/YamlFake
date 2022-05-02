@@ -30,6 +30,16 @@ stages:
               packageType: 'sdk'
               version: '6.0.100'
           - task: DotNetCoreCLI@2
+            displayName: Install Paket
+            inputs:
+              command: custom
+              custom: tool install paket
+          - task: DotNetCoreCLI@2
+            displayName: Install FAKE
+            inputs:
+              command: custom
+              custom: tool install fake-cli
+          - task: DotNetCoreCLI@2
             inputs:
               command: custom
               custom: fake build target Compile
@@ -55,9 +65,14 @@ stages:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
           - task: DotNetCoreCLI@2
+            displayName: Install FAKE
             inputs:
               command: custom
-              custom: fake build target Tests
+              custom: tool install fake-cli
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: custom
+              custom: fake run build.fsx --target Tests --single-target
 
   - stage: Release
     displayName: Release to CD system
