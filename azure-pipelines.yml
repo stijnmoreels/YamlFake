@@ -30,15 +30,10 @@ stages:
               packageType: 'sdk'
               version: '6.0.202'
           - task: DotNetCoreCLI@2
-            displayName: Install Paket
+            displayName: Install .NET tools
             inputs:
               command: custom
-              custom: tool install Paket
-          - task: DotNetCoreCLI@2
-            displayName: Install FAKE
-            inputs:
-              command: custom
-              custom: tool install fake-cli
+              custom: tool restore
           - task: DotNetCoreCLI@2
             inputs:
               command: custom
@@ -65,10 +60,10 @@ stages:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
           - task: DotNetCoreCLI@2
-            displayName: Install FAKE
+            displayName: Install .NET tools
             inputs:
               command: custom
-              custom: tool install fake-cli
+              custom: tool restore
           - task: DotNetCoreCLI@2
             inputs:
               command: custom
