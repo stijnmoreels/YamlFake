@@ -59,8 +59,8 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          # - script: dotnet tool restore
-          #   displayName: Restore .NET tools
+          - script: dotnet tool restore
+            displayName: Restore .NET tools
           - script: dotnet fake run build.fsx --target Tests --single-target
             displayName: Run 'Tests' FAKE target
           - task: PublishTestResults@2
