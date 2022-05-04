@@ -63,6 +63,11 @@ stages:
             displayName: Restore .NET tools
           - script: dotnet fake run build.fsx --target Tests --single-target
             displayName: Run 'Tests' FAKE target
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: NUnit
+              testResultsFiles: "**/TestResults.xml"
+              failTaskOnFailedTests: true
 
   - stage: Release
     displayName: Release to CD system
