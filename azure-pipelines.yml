@@ -33,7 +33,7 @@ stages:
             displayName: Restore .NET tools
           - script: dotnet tool install fake-cli --tool-path bin/fake
             displayName: Restore .NET tools
-          - script: fake build target Compile
+          - script: dotnet fake build target Compile
             displayName: Run Compile FAKE target
           - task: CopyFiles@2
             displayName: 'Copy build artifacts'
@@ -63,7 +63,7 @@ stages:
               path: '$(Build.SourcesDirectory)'
           # - script: dotnet tool install fake-cli -g
           #   displayName: Restore .NET tools
-          - script: fake run build.fsx --target Tests --single-target
+          - script: dotnet fake run build.fsx --target Tests --single-target
             displayName: Run 'Tests' FAKE target
           - task: PublishTestResults@2
             inputs:
