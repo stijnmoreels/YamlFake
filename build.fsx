@@ -30,7 +30,7 @@ Target.create "Compile" <| fun _ ->
     |> Seq.iter (DotNet.build id)
 
 Target.create "Tests" <| fun _ ->
-  let result = DotNet.exec id "run" "--project src\Library.Tests.Unit\Library.Tests.Unit.fsproj --no-restore --no-build"
+  let result = DotNet.exec id "run" "--project .\src\Library.Tests.Unit\Library.Tests.Unit.fsproj"
   if not result.OK then failwith (String.Join (", ", result.Messages))
 
 Target.create "All" ignore
