@@ -36,7 +36,7 @@ stages:
           - task: CopyFiles@2
             displayName: 'Copy build artifacts'
             inputs:
-              contents: '**/?(bin|obj)/**'
+              contents: '**/?(bin|obj|.fake)/**'
               targetFolder: '$(Pipeline.Workspace)/build'
           - task: PublishPipelineArtifact@0
             displayName: 'Publish build artifacts'
@@ -59,8 +59,8 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          - script: dotnet tool restore
-            displayName: Restore .NET tools
+          # - script: dotnet tool restore
+          #   displayName: Restore .NET tools
           - script: dotnet fake run build.fsx --target Tests --single-target
             displayName: Run 'Tests' FAKE target
           - task: PublishTestResults@2
