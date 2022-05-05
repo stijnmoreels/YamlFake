@@ -29,9 +29,7 @@ stages:
             inputs:
               packageType: 'sdk'
               version: '6.0.202'
-          - script: dotnet tool install -g paket
-            displayName: Restore .NET tools
-          - script: dotnet tool install -g fake-cli
+          - script: dotnet tool restore
             displayName: Restore .NET tools
           - script: dotnet fake build target Compile
             displayName: Run Compile FAKE target
