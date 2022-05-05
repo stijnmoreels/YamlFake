@@ -29,9 +29,9 @@ stages:
             inputs:
               packageType: 'sdk'
               version: '6.0.202'
-          - script: dotnet tool install paket --tool-path bin/paket
+          - script: dotnet tool install -g paket
             displayName: Restore .NET tools
-          - script: dotnet tool install fake-cli --tool-path bin/fake
+          - script: dotnet tool install -g fake-cli
             displayName: Restore .NET tools
           - script: dotnet fake build target Compile
             displayName: Run Compile FAKE target
@@ -61,8 +61,8 @@ stages:
             inputs:
               artifact: 'Build'
               path: '$(Build.SourcesDirectory)'
-          # - script: dotnet tool install fake-cli -g
-          #   displayName: Restore .NET tools
+          - script: dotnet tool install -g fake-cli
+            displayName: Restore .NET tools
           - script: dotnet fake run build.fsx --target Tests --single-target
             displayName: Run 'Tests' FAKE target
           - task: PublishTestResults@2
