@@ -1,19 +1,91 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/*
+      - build.fsx
+
+pr:
+  paths:
+    include:
+      - src/*
+      - azure-pipelines.yml
+      - build.fsx
+
+variables:
+  - template: build/build.yml
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: '$(Vm.Image)'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+  - stage: Build
+    jobs:
+      - job: Compile
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Import .NET Core SDK ($(DotNet.Sdk))'
+            inputs:
+              packageType: 'sdk'
+              version: '$(DotNet.Sdk)'
+          - script: dotnet tool restore
+            displayName: Restore .NET tools
+          - script: dotnet fake build target Compile
+            displayName: Run Compile FAKE target
+          - task: CopyFiles@2
+            displayName: 'Copy build artifacts'
+            inputs:
+              contents: '**/?(bin|obj)/**'
+              targetFolder: '$(Pipeline.Workspace)/build'
+          - task: PublishPipelineArtifact@0
+            displayName: 'Publish build artifacts'
+            inputs:
+              targetPath: '$(Pipeline.Workspace)/build'
+              artifactName: Build
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  - stage: UnitTests
+    displayName: Unit tests
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: RunTests
+        displayName: Run unit tests
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download build artifacts'
+            inputs:
+              artifact: 'Build'
+              path: '$(Build.SourcesDirectory)'
+          - script: dotnet tool install -g fake-cli
+            displayName: Restore .NET tools
+          - script: dotnet tool install paket
+            displayName: Restore .NET tools
+          - script: fake run build.fsx --target Tests --single-target
+            displayName: Run 'Tests' FAKE target
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: NUnit
+              testResultsFiles: "TestResults.xml"
+              failTaskOnFailedTests: true
+
+  - stage: Release
+    displayName: Release to CD system
+    dependsOn: UnitTests
+    condition: succeeded()
+    jobs:
+      - job: PushToCD
+        displayName: Push to CD system
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download build artifacts'
+            inputs:
+              artifact: 'Build'
+              path: '$(Build.SourcesDirectory)'
