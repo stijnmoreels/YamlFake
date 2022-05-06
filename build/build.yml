@@ -1,0 +1,4 @@
+variables:
+  Vm.Image: 'ubuntu-latest'
+  DotNet.Sdk: '6.0.202'
+  Project: 'Library'

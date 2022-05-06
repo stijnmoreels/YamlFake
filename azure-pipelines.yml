@@ -14,8 +14,11 @@ pr:
       - azure-pipelines.yml
       - build.fsx
 
+variables:
+  - template: build/build.yml
+
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: '$(Vm.Image)'
 
 stages:
   - stage: Build
@@ -25,10 +28,10 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - task: UseDotNet@2
-            displayName: 'Import .NET Core SDK (6.0.202)'
+            displayName: 'Import .NET Core SDK ($(DotNet.Sdk))'
             inputs:
               packageType: 'sdk'
-              version: '6.0.202'
+              version: '$(DotNet.Sdk)'
           - script: dotnet tool restore
             displayName: Restore .NET tools
           - script: dotnet fake build target Compile
